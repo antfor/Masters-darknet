@@ -1,6 +1,7 @@
 #include "darknet.h"
 #include "convolutional_layer.h"
 #include <stdio.h>
+#include "nnpack.h"
 
 
 
@@ -30,11 +31,13 @@ int run_test(int argc, char **argv)
 
 
     l.weights = kernel;
+    //l.biases = 0;
         
     network net = *make_network(1);
     net.outputs = l.outputs;
     net.input = data;
-    forward_convolutional_layer(l , net);
+   // forward_convolutional_layer(l , net);
+    forward_convolutional_layer_nnpack(l , net);
     
     printOut(net, l);
 
@@ -42,6 +45,8 @@ int run_test(int argc, char **argv)
 
     return 0;
 }
+
+
 
 void printOut(network net, convolutional_layer l){
     int i;
