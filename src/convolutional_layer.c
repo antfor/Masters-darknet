@@ -474,6 +474,9 @@ void forward_convolutional_layer(convolutional_layer l, network net)
         }
     }
 
+
+    print_out(l);
+
     if(l.batch_normalize){
         forward_batchnorm_layer(l, net);
     } else {
@@ -482,6 +485,20 @@ void forward_convolutional_layer(convolutional_layer l, network net)
 
     activate_array(l.output, l.outputs*l.batch, l.activation);
     if(l.binary || l.xnor) swap_binary(&l);
+}
+
+void print_out(convolutional_layer l){
+
+    int step = l.out_h;
+    printf("Outputs: %d \n", l.outputs);
+
+    for (int i = 0; i < l.outputs; i+=step){
+        for(int j = 0; j < step; j++){
+            printf("%f ", l.output[i+j]);
+            
+        }
+        printf("\n");
+    }
 }
 
 void backward_convolutional_layer(convolutional_layer l, network net)

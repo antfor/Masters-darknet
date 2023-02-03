@@ -21,6 +21,7 @@ extern void run_go(int argc, char **argv);
 extern void run_art(int argc, char **argv);
 extern void run_super(int argc, char **argv);
 extern void run_lsd(int argc, char **argv);
+extern void run_test(int argc, char **argv);
 
 void average(int argc, char *argv[])
 {
@@ -457,11 +458,13 @@ int main(int argc, char **argv)
         run_art(argc, argv);
     } else if (0 == strcmp(argv[1], "tag")){
         run_tag(argc, argv);
+    }  else if (0 == strcmp(argv[1], "con")){
+        run_test(argc, argv);
     } else if (0 == strcmp(argv[1], "3d")){
         composite_3d(argv[2], argv[3], argv[4], (argc > 5) ? atof(argv[5]) : 0);
     } else if (0 == strcmp(argv[1], "test")){
         test_resize(argv[2]);
-    } else if (0 == strcmp(argv[1], "nightmare")){
+    }else if (0 == strcmp(argv[1], "nightmare")){
         run_nightmare(argc, argv);
     } else if (0 == strcmp(argv[1], "rgbgr")){
         rgbgr_net(argv[2], argv[3], argv[4]);
