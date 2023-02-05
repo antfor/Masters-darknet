@@ -446,6 +446,7 @@ void backward_bias(float *bias_updates, float *delta, int batch, int n, int size
     }
 }
 
+
 void forward_convolutional_layer(convolutional_layer l, network net)
 {
     int i, j;
@@ -477,9 +478,6 @@ void forward_convolutional_layer(convolutional_layer l, network net)
             gemm(0,0,m,n,k,1,a,k,b,n,1,c,n);
         }
     }
-
-
-    print_out(l);
 
     if(l.batch_normalize){
         forward_batchnorm_layer(l, net);
@@ -517,15 +515,18 @@ void forward_convolutional_layer_nnpack(convolutional_layer l, network net)
 
     pthreadpool_t threadpool = pthreadpool_create(1);
 
+    
     for(i = 0; i < l.batch; ++i){
         for(j = 0; j < l.groups; ++j){
-            float *a = l.weights + j*l.nweights/l.groups;
-            float *b = net.workspace;
-            float *c = l.output + (i*l.groups + j)*n*m;
+        //    float *a = l.weights + j*l.nweights/l.groups;
+        //    float *b = net.workspace;
+        //    float *c = l.output + (i*l.groups + j)*n*m;
             float *im =  net.input + (i*l.groups + j)*l.c/l.groups*l.h*l.w;
 
-       nnp_convolution_inference(
-            nnp_convolution_algorithm_implicit_gemm,
+       printf("hello \n");
+
+       enum nnp_status status = nnp_convolution_inference(
+            nnp_convolution_algorithm_auto,
             nnp_convolution_transform_strategy_tuple_based,
             (size_t)(l.c / l.groups),
             (size_t)m,
@@ -541,14 +542,16 @@ void forward_convolutional_layer_nnpack(convolutional_layer l, network net)
             NULL,
             nnp_activation_identity,
             NULL,
-            threadpool,
+            NULL,
             NULL
         );
+
+        //if (status != nnp_status_success) {
+            printf("NNPACK convolution: %d \n", (int)status);
+        //}
+
         }
     }
-
-
-    print_out(l);
 
     if(l.batch_normalize){
         forward_batchnorm_layer(l, net);
@@ -560,19 +563,6 @@ void forward_convolutional_layer_nnpack(convolutional_layer l, network net)
     if(l.binary || l.xnor) swap_binary(&l);
 }
 
-void print_out(convolutional_layer l){
-
-    int step = l.out_h;
-    printf("Outputs: %d \n", l.outputs);
-
-    for (int i = 0; i < l.outputs; i+=step){
-        for(int j = 0; j < step; j++){
-            printf("%f ", l.output[i+j]);
-            
-        }
-        printf("\n");
-    }
-}
 
 void backward_convolutional_layer(convolutional_layer l, network net)
 {
