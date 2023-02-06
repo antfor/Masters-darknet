@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef NNPACK
+#include "nnpack.h"
+#endif
+
 extern void predict_classifier(char *datacfg, char *cfgfile, char *weightfile, char *filename, int top);
 extern void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filename, float thresh, float hier_thresh, char *outfile, int fullscreen);
 extern void run_yolo(int argc, char **argv);
@@ -400,6 +404,12 @@ void visualize(char *cfgfile, char *weightfile)
 
 int main(int argc, char **argv)
 {
+
+#ifdef NNPACK
+    enum nnp_status status =  nnp_initialize();
+    printf("NNPACK initialize status: %d\n", status);
+#endif
+
     //test_resize("data/bad.jpg");
     //test_box();
     //test_convolutional_layer();

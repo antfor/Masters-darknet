@@ -1,7 +1,9 @@
 #include "darknet.h"
 #include "convolutional_layer.h"
 #include <stdio.h>
+#ifdef NNPACK
 #include "nnpack.h"
+#endif
 
 
 network create_network(layer l, float *data){
@@ -91,21 +93,20 @@ int run_test(int argc, char **argv)
 
     printIn(net, l);
 
-    //forward_convolutional_layer(l , net);
+    forward_convolutional_layer(l , net);
 
-    //printOut(net, l);
+    printOut(net, l);
 
-    //printf("Result: %d \n", equal(result, l.output, 36));
+    printf("Result: %d \n", equal(result, l.output, 36));
 
-    enum nnp_status status = nnp_initialize();
 
-    printf("NNPACK initialization: %d \n", (int)status);
-
-    forward_convolutional_layer_nnpack(l , net);
+#ifdef NNPACK
+    forward_convolutional_layer_nnp(l , net);
     
     printOut(net, l);
 
     printf("Result: %d \n", equal(result, l.output, 36));
+#endif
 
     printf("Hello, World!\n");
 

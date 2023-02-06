@@ -419,6 +419,11 @@ struct layer{
     cudnnConvolutionBwdFilterAlgo_t bf_algo;
 #endif
 #endif
+#ifdef NNPACK
+    float * no_bias_npp;
+    float * workspace_buffer_npp;
+    size_t  buffer_size_npp;
+#endif
 };
 
 void free_layer(layer);
