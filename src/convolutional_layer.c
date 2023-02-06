@@ -471,8 +471,11 @@ void forward_convolutional_layer(convolutional_layer l, network net)
             float *im = net.input + (i * l.groups + j) * l.c / l.groups * l.h * l.w;
 
             // gemm(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
+
+            // Darknet handles biases, so provide NNPack with empty biases
+            float *bias = calloc(1, sizeof(float) * m);
             nnp_convolution_inference(
-                nnp_convolution_algorithm_implicit_gemm,
+                nnp_convolution_algorithm_ft8x8,
                 nnp_convolution_transform_strategy_tuple_based,
                 (size_t)(l.c / l.groups),
                 (size_t)m,
@@ -482,7 +485,7 @@ void forward_convolutional_layer(convolutional_layer l, network net)
                 stride,
                 im,
                 l.weights + j * l.nweights / l.groups,
-                NULL,
+                bias,
                 l.output + j * n * m,
                 NULL,
                 NULL,
