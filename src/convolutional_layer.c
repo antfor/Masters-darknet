@@ -513,7 +513,7 @@ void forward_convolutional_layer_nnpack(convolutional_layer l, network net)
     struct nnp_size kernel_size = { l.size, l.size };
     struct nnp_size stride = { l.stride, l.stride };
 
-    pthreadpool_t threadpool = pthreadpool_create(1);
+    pthreadpool_t threadpool = pthreadpool_create(4);
 
     
     for(i = 0; i < l.batch; ++i){
@@ -521,13 +521,16 @@ void forward_convolutional_layer_nnpack(convolutional_layer l, network net)
         //    float *a = l.weights + j*l.nweights/l.groups;
         //    float *b = net.workspace;
         //    float *c = l.output + (i*l.groups + j)*n*m;
-            float *im =  net.input + (i*l.groups + j)*l.c/l.groups*l.h*l.w;
+        float *im =  net.input + (i*l.groups + j)*l.c/l.groups*l.h*l.w;
 
        printf("hello \n");
+       
+      
+      float *bias = calloc(1, m * sizeof(float));
 
        enum nnp_status status = nnp_convolution_inference(
             nnp_convolution_algorithm_auto,
-            nnp_convolution_transform_strategy_tuple_based,
+            nnp_convolution_transform_strategy_compute,
             (size_t)(l.c / l.groups),
             (size_t)m,
             input_size,
@@ -536,13 +539,13 @@ void forward_convolutional_layer_nnpack(convolutional_layer l, network net)
             stride,
             im,
             l.weights +j*l.nweights / l.groups,
-            NULL,
+            bias,
             l.output + j*n*m,
             NULL,
             NULL,
             nnp_activation_identity,
             NULL,
-            NULL,
+            threadpool,
             NULL
         );
 
