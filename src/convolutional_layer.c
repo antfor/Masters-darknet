@@ -551,7 +551,7 @@ void forward_convolutional_layer_nnp(convolutional_layer l, network net)
         //float *bias = calloc(1, sizeof(float) * m);
 
         enum nnp_status status = nnp_convolution_inference(
-            nnp_convolution_algorithm_implicit_gemm,
+            nnp_convolution_algorithm_ft16x16,
             nnp_convolution_transform_strategy_compute,
             (size_t)(l.c / l.groups),
             (size_t)m,
@@ -602,7 +602,7 @@ size_t calculate_buffer_size_npp(convolutional_layer l){
 
     enum nnp_status status = nnp_convolution_inference(
             nnp_convolution_algorithm_ft16x16,
-             nnp_convolution_transform_strategy_compute,
+            nnp_convolution_transform_strategy_compute,
             (size_t)(l.c / l.groups),
             (size_t)m,
             input_size,

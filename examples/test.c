@@ -49,7 +49,7 @@ void printOut(network net, convolutional_layer l){
     }
 }
 
-bool equal(const void *array_one, void *array_two, const size_t elem_count)
+int equal(const void *array_one, void *array_two, const size_t elem_count)
 {
   return memcmp(array_one, array_two, elem_count * sizeof(float)) == 0;
 }

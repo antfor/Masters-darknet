@@ -508,7 +508,16 @@ int main(int argc, char **argv)
         mkimg(argv[2], argv[3], atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), argv[7]);
     } else if (0 == strcmp(argv[1], "imtest")){
         test_resize(argv[2]);
-    } else {
+    } else if (0 == strcmp(argv[1], "bench_darknet19")){
+        printf("bench_c\n");
+        predict_classifier("cfg/imagenet1k.data", "cfg/darknet19.cfg", "darknet19.weights", "data/eagle.jpg", 5);
+    }else if (0 == strcmp(argv[1], "bench_yolo")){
+        float thresh = .5;
+        char *filename = "data/dog.jpg";
+        char *outfile = 0;
+        int fullscreen = 0;
+        test_detector("cfg/coco.data", "cfg/yolov3.cfg", "yolov3.weights", filename, thresh, .5, outfile, fullscreen);
+    }else {
         fprintf(stderr, "Not an option: %s\n", argv[1]);
     }
     return 0;
