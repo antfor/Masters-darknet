@@ -474,8 +474,12 @@ void forward_convolutional_layer(convolutional_layer l, network net)
 
             // Darknet handles biases, so provide NNPack with empty biases
             float *bias = calloc(1, sizeof(float) * m);
+
+            // If stride is not equal to 1, use gemm instead of fft
+            enum nnp_convolution_algorithm convolution_algorithm = l.stride == 1 ? nnp_convolution_algorithm_ft16x16 : nnp_convolution_algorithm_implicit_gemm;
+
             nnp_convolution_inference(
-                nnp_convolution_algorithm_ft8x8,
+                convolution_algorithm,
                 nnp_convolution_transform_strategy_tuple_based,
                 (size_t)(l.c / l.groups),
                 (size_t)m,
