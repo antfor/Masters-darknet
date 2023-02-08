@@ -5,6 +5,7 @@
 #include "col2im.h"
 #include "blas.h"
 #include "gemm.h"
+#include "nnpack.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -446,42 +447,72 @@ void forward_convolutional_layer(convolutional_layer l, network net)
 {
     int i, j;
 
-    fill_cpu(l.outputs*l.batch, 0, l.output, 1);
+    struct nnp_size input_size = {l.w, l.h};
+    struct nnp_padding input_padding = {l.pad, l.pad, l.pad, l.pad};
+    struct nnp_size kernel_size = {l.size, l.size};
+    struct nnp_size stride = {l.stride, l.stride};
 
-    if(l.xnor){
-        binarize_weights(l.weights, l.n, l.c/l.groups*l.size*l.size, l.binary_weights);
+    fill_cpu(l.outputs * l.batch, 0, l.output, 1);
+
+    if (l.xnor)
+    {
+        binarize_weights(l.weights, l.n, l.c / l.groups * l.size * l.size, l.binary_weights);
         swap_binary(&l);
-        binarize_cpu(net.input, l.c*l.h*l.w*l.batch, l.binary_input);
+        binarize_cpu(net.input, l.c * l.h * l.w * l.batch, l.binary_input);
         net.input = l.binary_input;
     }
 
-    int m = l.n/l.groups;
-    int k = l.size*l.size*l.c/l.groups;
-    int n = l.out_w*l.out_h;
-    for(i = 0; i < l.batch; ++i){
-        for(j = 0; j < l.groups; ++j){
-            float *a = l.weights + j*l.nweights/l.groups;
-            float *b = net.workspace;
-            float *c = l.output + (i*l.groups + j)*n*m;
-            float *im =  net.input + (i*l.groups + j)*l.c/l.groups*l.h*l.w;
+    int m = l.n / l.groups;
+    int n = l.out_w * l.out_h;
+    for (i = 0; i < l.batch; ++i)
+    {
+        for (j = 0; j < l.groups; ++j)
+        {
+            float *im = net.input + (i * l.groups + j) * l.c / l.groups * l.h * l.w;
 
-            if (l.size == 1) {
-                b = im;
-            } else {
-                im2col_cpu(im, l.c/l.groups, l.h, l.w, l.size, l.stride, l.pad, b);
-            }
-            gemm(0,0,m,n,k,1,a,k,b,n,1,c,n);
+            // gemm(0, 0, m, n, k, 1, a, k, b, n, 1, c, n);
+
+            // Darknet handles biases, so provide NNPack with empty biases
+            float *bias = calloc(1, sizeof(float) * m);
+
+            // If stride is not equal to 1, use gemm instead of fft
+            enum nnp_convolution_algorithm convolution_algorithm = l.stride == 1 ? nnp_convolution_algorithm_ft16x16 : nnp_convolution_algorithm_implicit_gemm;
+
+            nnp_convolution_inference(
+                convolution_algorithm,
+                nnp_convolution_transform_strategy_tuple_based,
+                (size_t)(l.c / l.groups),
+                (size_t)m,
+                input_size,
+                input_padding,
+                kernel_size,
+                stride,
+                im,
+                l.weights + j * l.nweights / l.groups,
+                bias,
+                l.output + j * n * m,
+                NULL,
+                NULL,
+                nnp_activation_identity,
+                NULL,
+                NULL, // Null threadpool means not parallel, fix
+                NULL);
         }
     }
 
-    if(l.batch_normalize){
+    if (l.batch_normalize)
+    {
         forward_batchnorm_layer(l, net);
-    } else {
-        add_bias(l.output, l.biases, l.batch, l.n, l.out_h*l.out_w);
+    }
+    else
+    {
+        add_bias(l.output, l.biases, l.batch, l.n, l.out_h * l.out_w);
     }
 
-    activate_array(l.output, l.outputs*l.batch, l.activation);
-    if(l.binary || l.xnor) swap_binary(&l);
+    activate_array(l.output, l.outputs * l.batch, l.activation);
+    if (l.binary || l.xnor)
+        swap_binary(&l);
+
 }
 
 void backward_convolutional_layer(convolutional_layer l, network net)
