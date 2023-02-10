@@ -14,7 +14,6 @@
 
 #ifdef NNPACK
 #include "nnpack.h"
-#include <nnpack/hwinfo.h>
 #endif
 
 void swap_binary(convolutional_layer *l)
