@@ -437,7 +437,7 @@ void resize_convolutional_layer(convolutional_layer *l, int w, int h)
         l->x_gpu = cuda_make_array(l->output, l->batch*l->outputs);
         l->x_norm_gpu = cuda_make_array(l->output, l->batch*l->outputs);
     }
-#ifdef CUDNNnnpack alternative
+#ifdef CUDNN
     cudnn_convolutional_setup(l);
 #endif
 #endif
