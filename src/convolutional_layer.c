@@ -537,8 +537,26 @@ void forward_convolutional_layer_nnp(convolutional_layer l, network net)
     struct nnp_size stride = { l.stride, l.stride };
 
     //pthreadpool_t threadpool = pthreadpool_create(4);
+    enum nnp_convolution_algorithm algorithm;
+#ifdef WT
+    algorithm = nnp_convolution_algorithm_wt8x8;
+#endif
+#ifdef FT8
+    algorithm = l.stride == 1 ? nnp_convolution_algorithm_ft8x8 : nnp_convolution_algorithm_implicit_gemm;
+#endif
+#ifdef FT16
+    algorithm = l.stride == 1 ? nnp_convolution_algorithm_ft16x16 : nnp_convolution_algorithm_implicit_gemm;
+#endif
+#ifdef GEMM
+    algorithm = nnp_convolution_algorithm_implicit_gemm;
+#endif
+#ifdef DIRECT
+    algorithm = nnp_convolution_algorithm_direct;
+#endif
+#ifdef AUTO
+    algorithm = nnp_convolution_algorithm_auto;
+#endif
 
-    
     for(i = 0; i < l.batch; ++i){
         for(j = 0; j < l.groups; ++j){
         //    float *a = l.weights + j*l.nweights/l.groups;
@@ -551,7 +569,7 @@ void forward_convolutional_layer_nnp(convolutional_layer l, network net)
         //float *bias = calloc(1, sizeof(float) * m);
 
         enum nnp_status status = nnp_convolution_inference(
-            nnp_convolution_algorithm_ft16x16,
+            algorithm,
             nnp_convolution_transform_strategy_compute,
             (size_t)(l.c / l.groups),
             (size_t)m,
@@ -600,8 +618,28 @@ size_t calculate_buffer_size_npp(convolutional_layer l){
 
     size_t mem = 0;
 
+        enum nnp_convolution_algorithm algorithm;
+#ifdef WT
+    algorithm = nnp_convolution_algorithm_wt8x8;
+#endif
+#ifdef FT8
+    algorithm = l.stride == 1 ? nnp_convolution_algorithm_ft8x8 : nnp_convolution_algorithm_implicit_gemm;
+#endif
+#ifdef FT16
+    algorithm = l.stride == 1 ? nnp_convolution_algorithm_ft16x16 : nnp_convolution_algorithm_implicit_gemm;
+#endif
+#ifdef GEMM
+    algorithm = nnp_convolution_algorithm_implicit_gemm;
+#endif
+#ifdef DIRECT
+    algorithm = nnp_convolution_algorithm_direct;
+#endif
+#ifdef AUTO
+    algorithm = nnp_convolution_algorithm_auto;
+#endif
+
     enum nnp_status status = nnp_convolution_inference(
-            nnp_convolution_algorithm_ft16x16,
+            algorithm,
             nnp_convolution_transform_strategy_compute,
             (size_t)(l.c / l.groups),
             (size_t)m,

@@ -610,6 +610,64 @@ void predict_classifier(char *datacfg, char *cfgfile, char *weightfile, char *fi
     }
 }
 
+void run_benchmark_classifier(char *datacfg, char *cfgfile, char *weightfile, char *filename, int top, int n, char *out)
+{
+    network *net = load_network(cfgfile, weightfile, 0);
+    set_batch_network(net, 1);
+    srand(2222222);
+
+    list *options = read_data_cfg(datacfg);
+
+    char *name_list = option_find_str(options, "names", 0);
+    if(!name_list) name_list = option_find_str(options, "labels", "data/labels.list");
+    if(top == 0) top = option_find_int(options, "top", 1);
+
+    FILE *file = fopen(out, "w");
+    //fprintf(file,"--------start---------\n");
+
+    int i = 0;
+    char **names = get_labels(name_list);
+    clock_t time;
+    float result;
+    int *indexes = calloc(top, sizeof(int));
+    char buff[256];
+    char *input = buff;
+    strncpy(input, filename, 256);
+    
+    image im = load_image_color(input, 0, 0);
+    
+
+    for(int j = 0; j < n; ++j){
+    
+        image r = letterbox_image(im, net->w, net->h);
+    
+
+        float *X = r.data;
+        time=clock();
+        float *predictions = network_predict(net, X);
+        if(net->hierarchy) hierarchy_predictions(predictions, net->outputs, net->hierarchy, 1, 1);
+        top_k(predictions, net->outputs, top, indexes);
+        
+        result = sec(clock() - time);
+
+        fprintf(stderr, "%s: Predicted in %f seconds.\n", input, result);
+        for(i = 0; i < top; ++i){
+            int index = indexes[i];
+
+            printf("%5.2f%%: %s\n", predictions[index]*100, names[index]);
+        }
+
+        fprintf(file, "%f\n", result);
+
+        if(r.data != im.data) free_image(r);
+
+    }
+    free_image(im);
+
+    fclose(file);
+
+}
+
 
 void label_classifier(char *datacfg, char *filename, char *weightfile)
 {

@@ -4,6 +4,12 @@ OPENCV=0
 OPENMP=0
 DEBUG=0
 NNPACK=0
+WT=0
+FT8=0
+FT16=0
+GEMM=0
+AUTO=0
+DIRECT=0
 
 ARCH= -gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_35,code=sm_35 \
@@ -26,7 +32,7 @@ NVCC=nvcc
 AR=ar
 ARFLAGS=rcs
 OPTS=-Ofast
-LDFLAGS= -lm -pthread 
+LDFLAGS= -lm -pthread
 COMMON= -Iinclude/ -Isrc/
 CFLAGS=-Wall -Wno-unused-result -Wno-unknown-pragmas -Wfatal-errors -fPIC
 
