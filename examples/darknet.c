@@ -26,7 +26,6 @@ extern void run_art(int argc, char **argv);
 extern void run_super(int argc, char **argv);
 extern void run_lsd(int argc, char **argv);
 extern void run_test(int argc, char **argv);
-extern void run_benchmark_classifier(char *datacfg, char *cfgfile, char *weightfile, char *filename, int top, int n, char* out);
 
 void average(int argc, char *argv[])
 {
@@ -518,10 +517,6 @@ int main(int argc, char **argv)
         char *outfile = 0;
         int fullscreen = 0;
         test_detector("cfg/coco.data", "cfg/yolov3.cfg", "yolov3.weights", filename, thresh, .5, outfile, fullscreen);
-    } else if (0 == strcmp(argv[1], "bench_darknet19_native")){
-        printf("bench_native\n");
-
-        run_benchmark_classifier("cfg/imagenet1k.data", "cfg/darknet19.cfg", "darknet19.weights", "data/eagle.jpg", 5, atoi(argv[2]), argv[3]);
     } else if (0 == strcmp(argv[1], "bench_yolo_native")){
         printf("bench_native yolo\n %s\n", argv[3]);
         FILE *file = fopen(argv[3], "w");

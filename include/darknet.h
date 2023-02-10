@@ -17,6 +17,10 @@
     #endif
 #endif
 
+#ifdef NNPACK
+    #include <nnpack.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -423,6 +427,7 @@ struct layer{
     float * no_bias_npp;
     float * workspace_buffer_npp;
     size_t  buffer_size_npp;
+    enum nnp_convolution_algorithm algorithm_npp;
 #endif
 };
 
