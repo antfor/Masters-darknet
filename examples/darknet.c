@@ -3,7 +3,6 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "nnpack.h"
 
 #ifdef NNPACK
 #include "nnpack.h"
@@ -415,8 +414,6 @@ int main(int argc, char **argv)
     //test_box();
     //test_convolutional_layer();
 
-    enum nnp_status status = nnp_initialize();
-    printf("NNPACK initialize status: %d\n", status);
 
     if(argc < 2){
         fprintf(stderr, "usage: %s <function>\n", argv[0]);
