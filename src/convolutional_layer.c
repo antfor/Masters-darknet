@@ -546,7 +546,7 @@ void forward_convolutional_layer_nnp(convolutional_layer l, network net)
     }
 
     int m = l.n/l.groups;
-    int k = l.size*l.size*l.c/l.groups;
+    //int k = l.size*l.size*l.c/l.groups;
     int n = l.out_w*l.out_h;
 
 

@@ -582,7 +582,7 @@ float test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filena
             printf("Enter Image Path: ");
             fflush(stdout);
             input = fgets(input, 256, stdin);
-            if(!input) return;
+            if(!input) return result;
             strtok(input, "\n");
         }
         image im = load_image_color(input,0,0);
@@ -596,7 +596,9 @@ float test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filena
 
         float *X = sized.data;
         time=what_time_is_it_now();
+#ifndef NO_PREDICT 
         network_predict(net, X);
+#endif
         result = what_time_is_it_now()-time;
         printf("%s: Predicted in %f seconds.\n", input, result);
         int nboxes = 0;

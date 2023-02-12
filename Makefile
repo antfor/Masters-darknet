@@ -10,6 +10,7 @@ FT16=0
 GEMM=0
 AUTO=0
 DIRECT=0
+NO_PREDICT=0 # disable prediction in the network
 
 ARCH= -gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_35,code=sm_35 \
@@ -82,7 +83,7 @@ OBJS = $(addprefix $(OBJDIR), $(OBJ))
 DEPS = $(wildcard src/*.h) Makefile include/darknet.h
 #DEPS = $(wildcard src/*.h) Makefile include/*.h
 
-all: obj backup results $(ALIB) $(EXEC)
+all: print_cmd_vars obj backup results $(ALIB) $(EXEC)
 #all: obj  results $(SLIB) $(ALIB) $(EXEC)
 
 
@@ -110,6 +111,9 @@ backup:
 	mkdir -p backup
 results:
 	mkdir -p results
+
+print_cmd_vars:
+    $(foreach v, $(.VARIABLES), $(if $(filter command line,$(origin $(v))), $(info $(v)=$($(v)))))
 
 .PHONY: clean
 
