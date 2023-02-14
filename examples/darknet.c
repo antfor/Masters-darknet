@@ -513,13 +513,19 @@ int main(int argc, char **argv)
     } else if (0 == strcmp(argv[1], "bench_darknet19")){
         printf("bench_c\n");
         predict_classifier("cfg/imagenet1k.data", "cfg/darknet19.cfg", "darknet19.weights", "data/eagle.jpg", 5);
-    } else if (0 == strcmp(argv[1], "bench_yolo")){
+    } else if (0 == strcmp(argv[1], "bench_yolo-20l")){
         float thresh = .5;
         char *filename = "data/dog.jpg";
         char *outfile = 0;
         int fullscreen = 0;
-        test_detector("cfg/coco.data", "cfg/yolov3.cfg", "yolov3.weights", filename, thresh, .5, outfile, fullscreen);
-    } else if (0 == strcmp(argv[1], "bench_yolo_native")){
+        test_detector("cfg/coco.data", "cfg/yolov3-20l.cfg", "yolov3.weights", filename, thresh, .5, outfile, fullscreen);
+    }else if (0 == strcmp(argv[1], "bench_yolo-tiny")){
+        float thresh = .5;
+        char *filename = "data/giraffe.jpg";
+        char *outfile = 0;
+        int fullscreen = 0;
+        test_detector("cfg/coco.data", "cfg/yolov3-tiny.cfg", "yolov3-tiny.weights", filename, thresh, .5, outfile, fullscreen);
+    }  else if (0 == strcmp(argv[1], "bench_yolo_native")){
         printf("bench_native yolo\n %s\n", argv[3]);
         FILE *file = fopen(argv[3], "w");
 
