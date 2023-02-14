@@ -10,7 +10,7 @@ FT16=0
 GEMM=0
 AUTO=0
 DIRECT=0
-PREDICT=1 # enable  prediction in the network
+NO_PREDICT=0
 
 ARCH= -gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_35,code=sm_35 \
@@ -68,8 +68,36 @@ endif
 
 ifeq ($(NNPACK), 1)
 CFLAGS+= -DNNPACK
-#LDFLAGS+= -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
-LDFLAGS+= -L/home/fft_vec/arm-deps/usr/local/lib -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
+LDFLAGS+= -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
+#LDFLAGS+= -L/home/fft_vec/arm-deps/usr/local/lib -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
+endif
+
+ifeq ($(NO_PREDICT), 1)
+CFLAGS+= -DNO_PREDICT
+endif
+
+ifeq ($(WT), 1)
+CFLAGS+= -DWT
+endif
+
+ifeq ($(FT8), 1)
+CFLAGS+= -DFT8
+endif
+
+ifeq ($(FT16), 1)
+CFLAGS+= -DFT16
+endif
+
+ifeq ($(GEMM), 1)
+CFLAGS+= -DGEMM
+endif
+
+ifeq ($(AUTO), 1)
+CFLAGS+= -DAUTO
+endif
+
+ifeq ($(DIRECT), 1)
+CFLAGS+= -DDIRECT
 endif
 
 OBJ=gemm.o utils.o cuda.o deconvolutional_layer.o convolutional_layer.o list.o image.o activations.o im2col.o col2im.o blas.o crop_layer.o dropout_layer.o maxpool_layer.o softmax_layer.o data.o matrix.o network.o connected_layer.o cost_layer.o parser.o option_list.o detection_layer.o route_layer.o upsample_layer.o box.o normalization_layer.o avgpool_layer.o layer.o local_layer.o shortcut_layer.o logistic_layer.o activation_layer.o rnn_layer.o gru_layer.o crnn_layer.o demo.o batchnorm_layer.o region_layer.o reorg_layer.o tree.o  lstm_layer.o l2norm_layer.o yolo_layer.o iseg_layer.o image_opencv.o

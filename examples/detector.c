@@ -596,7 +596,8 @@ float test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filena
 
         float *X = sized.data;
         time=what_time_is_it_now();
-#ifdef PREDICT 
+#ifndef NO_PREDICT
+        printf("PREDICTING ....\n");
         network_predict(net, X);
 #endif
         result = what_time_is_it_now()-time;
@@ -623,7 +624,7 @@ float test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filena
         free_image(sized);
         if (filename) break;
     }
-    //free_network(net);
+    free_network(net);
     return result;
 }
 
