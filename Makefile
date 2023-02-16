@@ -68,8 +68,8 @@ endif
 
 ifeq ($(NNPACK), 1)
 CFLAGS+= -DNNPACK
-LDFLAGS+= -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
-#LDFLAGS+= -L/home/fft_vec/arm-deps/usr/local/lib -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
+#LDFLAGS+= -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
+LDFLAGS+= -L/home/fft_vec/arm-deps/usr/local/lib -l:libnnpack.a -l:libpthreadpool.a -l:libcpuinfo.a -l:libclog.a
 endif
 
 ifeq ($(NO_PREDICT), 1)

@@ -8,7 +8,7 @@
 #include "nnpack.h"
 #endif
 
-extern void predict_classifier(char *datacfg, char *cfgfile, char *weightfile, char *filename, int top);
+extern float predict_classifier(char *datacfg, char *cfgfile, char *weightfile, char *filename, int top);
 extern float test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filename, float thresh, float hier_thresh, char *outfile, int fullscreen);
 extern void run_yolo(int argc, char **argv);
 extern void run_detector(int argc, char **argv);
@@ -542,7 +542,18 @@ int main(int argc, char **argv)
 
         fclose(file);
         
-    } else {
+    }else if (0 == strcmp(argv[1], "bench_vgg_native")){
+        printf("bench_native vgg\n %s\n", argv[3]);
+        FILE *file = fopen(argv[3], "w");
+
+        for(int k = 0; k < atoi(argv[2]); k++){
+            float result = predict_classifier("cfg/imagenet1k.data", "cfg/vgg-16.cfg", "vgg-16.weights", "data/eagle.jpg", 5);
+            fprintf(file, "%f\n", result);
+        }
+
+        fclose(file);
+
+    }  else {
         fprintf(stderr, "Not an option: %s\n", argv[1]);
     }
     return 0;

@@ -227,13 +227,13 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
     l.algorithm_npp = nnp_convolution_algorithm_implicit_gemm;
 
 #ifdef WT
-    l.algorithm_npp = l.stride == 3 || l.stride == 6 ? nnp_convolution_algorithm_wt8x8 : nnp_convolution_algorithm_implicit_gemm;
+    l.algorithm_npp = l.size == 3  ? nnp_convolution_algorithm_wt8x8 : nnp_convolution_algorithm_implicit_gemm;
 #endif
 #ifdef FT8
-    l.algorithm_npp = l.stride == 1 ? nnp_convolution_algorithm_ft8x8 : nnp_convolution_algorithm_implicit_gemm;
+    l.algorithm_npp = l.stride == 1 && l.size <= 8 ? nnp_convolution_algorithm_ft8x8 : nnp_convolution_algorithm_implicit_gemm;
 #endif
 #ifdef FT16
-    l.algorithm_npp = l.stride == 1 ? nnp_convolution_algorithm_ft16x16 : nnp_convolution_algorithm_implicit_gemm;
+    l.algorithm_npp = l.stride == 1 && l.size <= 16 ? nnp_convolution_algorithm_ft16x16 : nnp_convolution_algorithm_implicit_gemm;
 #endif
 #ifdef GEMM
     l.algorithm_npp = nnp_convolution_algorithm_implicit_gemm;
