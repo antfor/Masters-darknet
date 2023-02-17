@@ -239,7 +239,9 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
     l.algorithm_npp = nnp_convolution_algorithm_implicit_gemm;
 #endif
 #ifdef DIRECT
-    l.algorithm_npp = nnp_convolution_algorithm_direct;
+	if(l.size==1){
+	    l.algorithm_npp = nnp_convolution_algorithm_direct;
+	}
 #endif
 #ifdef AUTO
     l.algorithm_npp = nnp_convolution_algorithm_auto;
