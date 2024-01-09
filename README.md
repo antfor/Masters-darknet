@@ -1,6 +1,6 @@
 Source code for my thesis on Vectorizing The Fast Fourier Transform (FFT) for faster AI Convolutions.
 
-Darknet is used to run and benchark our vector length agnostic FFT on diffrent convolutional neural networks (CNN).
+Darknet is used to run and benchmark our vector length agnostic FFT on different convolutional neural networks (CNN).
 
 Thesis: http://hdl.handle.net/20.500.12380/307458
 
