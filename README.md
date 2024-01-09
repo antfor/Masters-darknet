@@ -1,10 +1,14 @@
 Source code for my thesis on Vectorizing The Fast Fourier Transform (FFT) for faster AI Convolutions.
+
 Darknet is used to run and benchark our vector length agnostic FFT on diffrent convolutional neural networks (CNN).
 
 Thesis: http://hdl.handle.net/20.500.12380/307458
-source code: 
-  https://github.com/antfor/Masters-NNPACK
-  https://github.com/antfor/Masters-darknet
+
+Source code: 
+
+   https://github.com/antfor/Masters-NNPACK
+
+   https://github.com/antfor/Masters-darknet
 
 
 # Fork of https://github.com/pjreddie/darknet
